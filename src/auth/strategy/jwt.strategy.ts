@@ -25,7 +25,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
                 throw new NotFoundException()
             }
             return user
-        } catch {
+        } catch (error) {
+            if (error.status === 404) throw error
             throw new UnauthorizedException()
         }
     }

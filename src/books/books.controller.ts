@@ -42,7 +42,8 @@ export class BooksController {
                 throw new NotFoundException()
             }
             return { data: books }
-        } catch (err) {
+        } catch (error) {
+            if (error.status === 404) throw error
             throw new InternalServerErrorException()
         }
     }
