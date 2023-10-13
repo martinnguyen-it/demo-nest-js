@@ -93,17 +93,8 @@ export class BooksController {
     @HttpCode(HttpStatus.NO_CONTENT)
     @Delete('delete/:id')
     async deleteBook(@Param() { id }: ParamsWithId) {
-        console.log(
-            '🚀 ~ file: books.controller.ts:96 ~ BooksController ~ deleteBook ~ id:',
-            id
-        )
-
         try {
             const user = await this.booksService.deleteById(id)
-            console.log(
-                '🚀 ~ file: books.controller.ts:103 ~ BooksController ~ deleteBook ~ user:',
-                user
-            )
             if (!user) {
                 throw new NotFoundException()
             }
