@@ -11,8 +11,8 @@ import {
     UseGuards,
 } from '@nestjs/common'
 import { UsersService } from './users.service'
-import ParamsWithId from 'src/utils/paramsWithId'
-import { MyJwtGuard } from 'src/auth/guard'
+import { ParamsWithId } from '@src/utils/paramsWithId'
+import { MyJwtGuard } from '@src/auth/guard'
 
 @Controller('user')
 export class UsersController {
@@ -44,7 +44,8 @@ export class UsersController {
 
             return { data: user }
         } catch (error) {
-            throw new InternalServerErrorException()
+            if (error.status === 404) throw error
+            else throw new InternalServerErrorException()
         }
     }
 
@@ -59,7 +60,8 @@ export class UsersController {
             }
             return null
         } catch (error) {
-            throw new InternalServerErrorException()
+            if (error.status === 404) throw error
+            else throw new InternalServerErrorException()
         }
     }
 }

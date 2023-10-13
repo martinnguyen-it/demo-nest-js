@@ -4,7 +4,6 @@ import {
     Delete,
     Get,
     HttpCode,
-    HttpException,
     HttpStatus,
     InternalServerErrorException,
     NotFoundException,
@@ -17,9 +16,9 @@ import {
 } from '@nestjs/common'
 import { BooksService } from './books.service'
 import { Book } from './book.schema'
-import ParamsWithId from 'src/utils/paramsWithId'
-import { IQueryString } from 'src/common/apiFeatures'
-import { MyJwtGuard } from 'src/auth/guard'
+import { ParamsWithId } from '@src/utils/paramsWithId'
+import { IQueryString } from '@src/common/apiFeatures'
+import { MyJwtGuard } from '@src/auth/guard'
 
 @Controller('book')
 export class BooksController {
@@ -36,9 +35,9 @@ export class BooksController {
     }
 
     @Get(':alias')
-    async getByAlias(@Param() alias: string) {
+    async getByAlias(@Param() alias) {
         try {
-            const books = await this.booksService.getOne({ alias })
+            const books = await this.booksService.getOne(alias)
             if (!books) {
                 throw new NotFoundException()
             }
@@ -60,10 +59,7 @@ export class BooksController {
             })
             return { data: newBook }
         } catch (error) {
-            throw new HttpException(
-                'Something went wrong',
-                HttpStatus.INTERNAL_SERVER_ERROR
-            )
+            throw new InternalServerErrorException()
         }
     }
 
@@ -75,35 +71,46 @@ export class BooksController {
         @Body() updateData: Partial<Book>
     ) {
         try {
-            const books = await this.booksService.updateOne({
-                id,
+            const books = await this.booksService.getOne({
+                _id: id,
                 author: req.user._id,
-                updateData,
             })
             if (!books) {
                 throw new NotFoundException()
             }
+            const { title, content } = updateData
+            if (title) books.title = title
+            if (content) books.content = content
+            await books.save()
             return { data: books }
         } catch (error) {
-            throw new HttpException(
-                'Something went wrong',
-                HttpStatus.INTERNAL_SERVER_ERROR
-            )
+            if (error.status === 404) throw error
+            else throw new InternalServerErrorException()
         }
     }
 
     @UseGuards(MyJwtGuard)
     @HttpCode(HttpStatus.NO_CONTENT)
-    @Delete(':id')
+    @Delete('delete/:id')
     async deleteBook(@Param() { id }: ParamsWithId) {
+        console.log(
+            '🚀 ~ file: books.controller.ts:96 ~ BooksController ~ deleteBook ~ id:',
+            id
+        )
+
         try {
             const user = await this.booksService.deleteById(id)
+            console.log(
+                '🚀 ~ file: books.controller.ts:103 ~ BooksController ~ deleteBook ~ user:',
+                user
+            )
             if (!user) {
                 throw new NotFoundException()
             }
             return null
         } catch (error) {
-            throw new InternalServerErrorException()
+            if (error.status === 404) throw error
+            else throw new InternalServerErrorException()
         }
     }
 }

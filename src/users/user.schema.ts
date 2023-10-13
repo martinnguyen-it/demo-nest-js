@@ -1,9 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Transform, Type } from 'class-transformer'
+import { Transform } from 'class-transformer'
 import { ObjectId } from 'mongoose'
 import { hash } from 'bcrypt'
 import { IsEmail, IsEnum, IsNotEmpty, IsOptional } from 'class-validator'
-import { Book } from 'src/books/book.schema'
 
 export type UserDocument = User & Document
 
@@ -29,9 +28,6 @@ export class User {
     @IsNotEmpty()
     @Prop({ select: false })
     password: string
-
-    @Type(() => Book)
-    books: Book[]
 }
 
 const UserSchema = SchemaFactory.createForClass(User)
@@ -42,12 +38,6 @@ UserSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next()
     this.password = await hash(this.password, 12)
     next()
-})
-
-UserSchema.virtual('books', {
-    ref: 'Book',
-    localField: '_id',
-    foreignField: 'author',
 })
 
 export { UserSchema }

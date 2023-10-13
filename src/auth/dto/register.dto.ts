@@ -20,7 +20,7 @@ export class RegisterDto {
     password: string
 
     @IsEmpty()
-    role: string
+    role?: string
 }
 
 export default RegisterDto

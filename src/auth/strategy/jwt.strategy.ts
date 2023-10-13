@@ -4,10 +4,10 @@ import {
     NotFoundException,
     UnauthorizedException,
 } from '@nestjs/common'
-import { UsersService } from 'src/users/users.service'
+import { UsersService } from '@src/users/users.service'
 import { PassportStrategy } from '@nestjs/passport'
-import { JwtPayload } from 'src/utils'
-import { User } from 'src/users/user.schema'
+import { JwtPayload } from '@src/utils'
+import { User } from '@src/users/user.schema'
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

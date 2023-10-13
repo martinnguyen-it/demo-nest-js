@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { Book, BookDocument } from './book.schema'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import APIFeatures, { IQueryString } from 'src/common/apiFeatures'
+import APIFeatures, { IQueryString } from '@src/common/apiFeatures'
 
 @Injectable()
 export class BooksService {
@@ -27,23 +27,11 @@ export class BooksService {
         return this.bookModel.create(bookData)
     }
 
-    async getOne(props: Partial<Book>) {
+    async getOne(props: Partial<Book | { _id: string }>) {
         return this.bookModel.findOne(props)
     }
 
     async deleteById(id: string) {
         return this.bookModel.findByIdAndDelete(id)
-    }
-
-    async updateOne({
-        id,
-        author,
-        updateData,
-    }: {
-        id: string
-        author: string
-        updateData: Partial<Book>
-    }) {
-        return this.bookModel.findOneAndUpdate({ id, author }, updateData)
     }
 }

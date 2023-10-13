@@ -1,13 +1,8 @@
-import {
-    HttpException,
-    HttpStatus,
-    Injectable,
-    NotFoundException,
-} from '@nestjs/common'
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { User, UserDocument } from './user.schema'
 import { Model } from 'mongoose'
-import MongoError from 'src/utils/mongoError.enum'
+import MongoError from '@src/utils/mongoError.enum'
 
 @Injectable()
 export class UsersService {
@@ -38,22 +33,18 @@ export class UsersService {
         return this.userModel.findById(id)
     }
 
-    async deleteById(id: string) {
+    deleteById(id: string) {
         return this.userModel.findById(id)
     }
 
-    async findOne(props: Partial<User>, select: string) {
-        const query = this.userModel.findOne(props)
-        const user = select ? await query.select(select) : await query
+    findOne(props: Partial<User>, select: string) {
+        let query = this.userModel.findOne(props)
+        query = select ? query.select(select) : query
 
-        if (!user) {
-            throw new NotFoundException()
-        }
-
-        return user
+        return query
     }
 
-    async getAll() {
+    getAll() {
         return this.userModel.find()
     }
 }
